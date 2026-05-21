@@ -14,7 +14,7 @@ const clinicalReportIdParamsSchema = Joi.object({
 const clinicalReportCreateBodySchema = Joi.object({
   reportType: Joi.string().required().trim().min(1).max(100),
   description: Joi.string().optional().allow('', null).trim().max(5000),
-  fileUrl: Joi.string().required().trim().uri({ scheme: ['http', 'https', 'gs'] }).max(2000),
+  fileUrl: Joi.string().required().trim().uri({ scheme: ['http', 'https', 'gs', 'local'] }).max(2000),
   fileMimeType: Joi.string().optional().trim().max(100),
   fileSizeBytes: Joi.number().optional().integer().min(0),
   reportDate: Joi.string().optional().isoDate(),

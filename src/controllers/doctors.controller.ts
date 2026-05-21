@@ -9,6 +9,45 @@ import { handleControllerError } from '@utils/errorHandler';
 const logger = new LoggerFactory().createLogger('DoctorsController');
 
 export const doctorsController = {
+  getAll: async (req: ExtendedRequest, res: ExtendedResponse) => {
+    try {
+      const query = DoctorValidationSchemas.validate<{ page: number; limit: number; specialization?: string; status: string }>(
+        DoctorValidationSchemas.doctorListQuery,
+        req.query as Record<string, unknown>
+      );
+
+      const offset = (query.page - 1) * query.limit;
+      const whereClause: Record<string, unknown> = { status: query.status };
+
+      if (query.specialization) {
+        whereClause.specialization = { [Op.iLike]: `%${query.specialization}%` };
+      }
+
+      const { rows, count } = await Doctor.findAndCountAll({
+        where: whereClause,
+        order: [['firstName', 'ASC'], ['lastName', 'ASC']],
+        limit: query.limit,
+        offset,
+      });
+
+      const items = rows.map((doctor) => buildDoctorResponse(doctor));
+
+      res.sendResponse(
+        {
+          page: query.page,
+          pageSize: query.limit,
+          totalCount: count,
+          items,
+          hasNextPage: offset + query.limit < count,
+          nextPage: offset + query.limit < count ? query.page + 1 : null,
+        },
+        'Doctors retrieved successfully'
+      );
+    } catch (error) {
+      handleControllerError(error, res, logger, { method: 'getAll' });
+    }
+  },
+
   search: async (req: ExtendedRequest, res: ExtendedResponse) => {
     try {
       const query = DoctorValidationSchemas.validate<{ query: string; page: number; limit: number }>(

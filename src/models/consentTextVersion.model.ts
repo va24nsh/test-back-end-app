@@ -50,12 +50,12 @@ ConsentTextVersion.init(
     consentTextCare: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: 'consent_text_care',
+      field: 'consent_care',
     },
     consentTextTraining: {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: 'consent_text_training',
+      field: 'consent_training',
     },
     isActive: {
       type: DataTypes.BOOLEAN,

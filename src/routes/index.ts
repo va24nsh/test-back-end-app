@@ -16,6 +16,7 @@ import { userRoutes } from '@routes/user.routes';
 import { userProfilesRoutes } from '@routes/user-profiles.routes';
 import { signedUrlRoutes } from '@routes/signed-url.routes';
 import { nudgesRoutes } from '@routes/nudges.routes';
+import { consentTextRoutes } from '@routes/consent-text.routes';
 // Phase 2 routes
 // import { prescriptionsRoutes } from '@routes/prescriptions.routes';
 // import { appointmentsRoutes } from '@routes/appointments.routes';
@@ -32,6 +33,7 @@ routes.use('/doctors', doctorsRoutes);
 routes.use('/consent-requests', consentsRoutes);
 routes.use('/consents', consentsRoutes);
 routes.use('/consent', consentRoutes);
+routes.use('/consent-text', consentTextRoutes);
 routes.use('/notifications', notificationsRoutes);
 routes.use('/notification-preferences', notificationPreferencesRoutes);
 routes.use('/clinical-analytics', clinicalAnalyticsRoutes);

@@ -18,10 +18,9 @@ export interface ConsentItemTimelineAttributes {
   geoLocation?: Record<string, unknown> | null;
   eventTimestamp: Date;
   createdAt: Date;
-  updatedAt: Date;
 }
 
-export type ConsentItemTimelineCreationAttributes = Optional<ConsentItemTimelineAttributes, 'id' | 'eventDescription' | 'actorId' | 'oldStatus' | 'newStatus' | 'oldValues' | 'newValues' | 'ipAddress' | 'deviceInfo' | 'geoLocation' | 'createdAt' | 'updatedAt'>;
+export type ConsentItemTimelineCreationAttributes = Optional<ConsentItemTimelineAttributes, 'id' | 'eventDescription' | 'actorId' | 'oldStatus' | 'newStatus' | 'oldValues' | 'newValues' | 'ipAddress' | 'deviceInfo' | 'geoLocation' | 'createdAt'>;
 
 export class ConsentItemTimeline
   extends Model<ConsentItemTimelineAttributes, ConsentItemTimelineCreationAttributes>
@@ -43,7 +42,6 @@ export class ConsentItemTimeline
   public geoLocation?: Record<string, unknown> | null;
   public eventTimestamp!: Date;
   public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
 ConsentItemTimeline.init(
@@ -130,17 +128,12 @@ ConsentItemTimeline.init(
       defaultValue: DataTypes.NOW,
       field: 'created_at',
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-      field: 'updated_at',
-    },
   },
   {
     sequelize,
     tableName: 'consent_item_timeline',
     timestamps: true,
+    updatedAt: false,
     underscored: false,
   }
 );

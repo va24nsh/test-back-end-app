@@ -52,8 +52,7 @@ const sessionCreateSchema = Joi.object({
 const refreshSchema = Joi.object({
   refreshToken: Joi.string().required().trim().min(32),
   deviceId: Joi.string().required().trim().min(1).max(255),
-  recaptchaToken: Joi.string().required().trim().min(10).max(4096),
-}).unknown(false);
+}).unknown(true);
 
 const logoutSchema = Joi.object({
   deviceId: Joi.string().required().trim().min(1).max(255),

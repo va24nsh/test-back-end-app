@@ -7,6 +7,13 @@ const doctorSearchQuerySchema = Joi.object({
   limit: Joi.number().integer().min(1).max(50).default(20),
 }).unknown(false);
 
+const doctorListQuerySchema = Joi.object({
+  page: Joi.number().integer().min(1).max(1000).default(1),
+  limit: Joi.number().integer().min(1).max(50).default(20),
+  specialization: Joi.string().trim().max(200).optional(),
+  status: Joi.string().valid('ACTIVE', 'INACTIVE', 'SUSPENDED').default('ACTIVE'),
+}).unknown(false);
+
 const validate = <T>(schema: Joi.Schema, data: Record<string, unknown> | undefined): T => {
   const body = data ?? {};
   const { error, value } = schema.validate(body, {
@@ -32,5 +39,6 @@ const validate = <T>(schema: Joi.Schema, data: Record<string, unknown> | undefin
 
 export const DoctorValidationSchemas = {
   doctorSearchQuery: doctorSearchQuerySchema,
+  doctorListQuery: doctorListQuerySchema,
   validate,
 };

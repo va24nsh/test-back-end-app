@@ -25,5 +25,5 @@ authRoutes.post('/email/verification/send', rateLimitMiddleware, verifyFirebaseI
 authRoutes.post('/email/finalize', rateLimitMiddleware, verifyFirebaseIdToken, fetchUser, asHandler(authController.emailVerificationFinalize));
 authRoutes.post('/email/verification/finalize', rateLimitMiddleware, verifyFirebaseIdToken, fetchUser, asHandler(authController.emailVerificationFinalize));
 authRoutes.post('/session/create', rateLimitMiddleware, verifyFirebaseIdToken, asHandler(authController.sessionCreate));
-authRoutes.post('/refresh', authRateLimitMiddleware, verifyRecaptchaV3, asHandler(authController.refresh));
+authRoutes.post('/refresh', authRateLimitMiddleware, asHandler(authController.refresh));
 authRoutes.post('/logout', rateLimitMiddleware, verifyFirebaseIdToken, fetchUser, asHandler(authController.logout));

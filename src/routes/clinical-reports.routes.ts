@@ -6,6 +6,7 @@ export const clinicalReportsRoutes = Router();
 
 clinicalReportsRoutes.use(rateLimitMiddleware, verifyAccessToken, fetchUser);
 clinicalReportsRoutes.get('/report-types', clinicalReportsController.getReportTypes);
+clinicalReportsRoutes.get('/uploaded-report-types', clinicalReportsController.getReportTypes);
 clinicalReportsRoutes.get('/hub-counts', clinicalReportsController.getHubCounts);
 clinicalReportsRoutes.get('/', clinicalReportsController.getAll);
 clinicalReportsRoutes.get('/:id', clinicalReportsController.getById);

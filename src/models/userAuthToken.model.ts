@@ -130,6 +130,7 @@ UserAuthToken.init(
     revokedAt: {
       type: DataTypes.DATE,
       allowNull: true,
+      defaultValue: null,
       field: 'revoked_at',
     },
     createdAt: {

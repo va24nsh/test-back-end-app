@@ -729,25 +729,25 @@ export const authController = {
         throw new UnauthorizedError('REFRESH_TOKEN_INVALID');
       }
 
-      if (existingToken.revokedAt) {
+      if (existingToken.dataValues.revokedAt) {
         throw new UnauthorizedError('REFRESH_TOKEN_INVALID');
       }
 
-      if (existingToken.replacedByTokenId) {
+      if (existingToken.dataValues.replacedByTokenId) {
         await UserAuthToken.update(
           { revokedAt: new Date() },
-          { where: { userId: existingToken.userId, revokedAt: null } }
+          { where: { userId: existingToken.dataValues.userId, revokedAt: null } }
         );
         throw new UnauthorizedError('REFRESH_TOKEN_REUSE_DETECTED');
       }
 
-      if (existingToken.refreshExpiresAt <= new Date() || existingToken.sessionExpiresAt <= new Date()) {
+      if (existingToken.dataValues.refreshExpiresAt <= new Date() || existingToken.dataValues.sessionExpiresAt <= new Date()) {
         throw new UnauthorizedError('REFRESH_TOKEN_EXPIRED');
       }
 
       await existingToken.update({ revokedAt: new Date(), lastUsedAt: new Date() });
 
-      const user = await User.findByPk(existingToken.userId);
+      const user = await User.findByPk(existingToken.dataValues.userId);
       if (!user) {
         throw new UnauthorizedError('REFRESH_TOKEN_INVALID');
       }
@@ -757,16 +757,16 @@ export const authController = {
       const now = new Date();
       const refreshToken = tokenManager.generateRefreshToken();
       const newRefreshTokenHash = tokenManager.hashRefreshToken(refreshToken);
-      const refreshExpiresAt = new Date(Math.min(now.getTime() + REFRESH_SLIDING_DURATION_MS, existingToken.sessionExpiresAt.getTime()));
+      const refreshExpiresAt = new Date(Math.min(now.getTime() + REFRESH_SLIDING_DURATION_MS, existingToken.dataValues.sessionExpiresAt.getTime()));
 
       const tokenRow = await UserAuthToken.create({
         userId: user.dataValues.id,
         refreshTokenHash: newRefreshTokenHash,
         deviceId: validated.deviceId,
-        ipAddress: req.ipAddress || existingToken.ipAddress || null,
+        ipAddress: req.ipAddress || existingToken.dataValues.ipAddress || null,
         refreshExpiresAt,
-        sessionExpiresAt: existingToken.sessionExpiresAt,
-        tokenFamilyId: existingToken.tokenFamilyId || crypto.randomUUID(),
+        sessionExpiresAt: existingToken.dataValues.sessionExpiresAt,
+        tokenFamilyId: existingToken.dataValues.tokenFamilyId || crypto.randomUUID(),
         lastUsedAt: now,
       });
 

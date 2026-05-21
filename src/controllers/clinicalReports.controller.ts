@@ -6,6 +6,7 @@ import { ConsentItem, ConsentItemTimeline, ConsentRequest, Doctor } from '@model
 import { ExtendedRequest, ExtendedResponse } from '@types';
 import { ClinicalReportValidationSchemas } from '@validators';
 import { handleControllerError } from '@utils/errorHandler';
+import { ALL_REPORT_TYPE_KEYS } from '@constants';
 
 const logger = new LoggerFactory().createLogger('ClinicalReportsController');
 
@@ -72,20 +73,10 @@ const loadReportWithAnalytics = async (id: string, userId: string) => {
 };
 
 export const clinicalReportsController = {
-  getReportTypes: async (req: ExtendedRequest, res: ExtendedResponse) => {
+  getReportTypes: async (_req: ExtendedRequest, res: ExtendedResponse) => {
     try {
-      const userId = getUserId(req);
-      const reports = await ClinicalReport.findAll({
-        where: { userId },
-        attributes: ['reportType'],
-        group: ['reportType'],
-        order: [['reportType', 'ASC']],
-      });
-
       res.sendResponse(
-        {
-          items: reports.map((report) => report.dataValues.reportType).filter(Boolean),
-        },
+        { items: ALL_REPORT_TYPE_KEYS },
         'Report types retrieved successfully'
       );
     } catch (error) {
