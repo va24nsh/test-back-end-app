@@ -7,7 +7,6 @@
     "esModuleInterop": true,
     /* === Paths & Module Resolution === */
     "baseUrl": "./src",
-    "ignoreDeprecations": "5.0",
     "paths": {
       "@config": ["config/index"],
       "@config/*": ["config/*"],

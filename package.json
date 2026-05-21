@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/server.js",
     "start:pm2": "pm2 start ecosystem.config.js --only mutanex-server-prod",
     "start:pm2:local": "pm2 start ecosystem.config.js --only mutanex-server-local",
@@ -72,9 +72,10 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.8.3"
   },
   "_moduleAliases": {
     "@config": "dist/config",
