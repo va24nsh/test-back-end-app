@@ -27,7 +27,7 @@ const getDbName = (environment: string): string => {
     case 'production':
       return baseName;
     default:
-      return `${baseName}_dev`;
+      return `${baseName}`;
   }
 };
 
@@ -40,6 +40,12 @@ export const sequelizeConfig = {
     host: config.POSTGRES_HOST || 'localhost',
     port: config.POSTGRES_PORT || 5440,
     dialect: 'postgres' as const,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
     logging: process.env.DB_LOGGING === 'true' ? console.log : false,
     seederStorage: 'sequelize',
     seederStorageTableName: 'sequelize_seeds',
