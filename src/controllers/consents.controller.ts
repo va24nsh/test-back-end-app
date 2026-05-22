@@ -81,13 +81,14 @@ const buildReportWhere = (userId: string, requestType: string, requestScope: Rec
   return where;
 };
 
-const expandConsentItems = async (userId: string, doctor: Doctor, requestType: string, requestScope: Record<string, unknown>) => {
+const expandConsentItems = async (userId: string, doctor: Doctor, requestType: string, requestScope: Record<string, unknown>, consentRequestId: string) => {
   const items: Array<Record<string, unknown>> = [];
 
   if (requestType === 'FULL_REPORT' || requestType === 'DATE_RANGE' || requestType === 'SPECIFIC') {
     const reports = await ClinicalReport.findAll({ where: buildReportWhere(userId, requestType, requestScope) });
     reports.forEach((report) => {
       items.push({
+        consentRequestId,
         doctorId: doctor.dataValues.id,
         externalDoctorId: doctor.dataValues.externalDoctorId || null,
         userId,
@@ -112,6 +113,7 @@ const expandConsentItems = async (userId: string, doctor: Doctor, requestType: s
 
     sections.forEach((sectionKey) => {
       items.push({
+        consentRequestId,
         doctorId: doctor.dataValues.id,
         externalDoctorId: doctor.dataValues.externalDoctorId || null,
         userId,
@@ -242,7 +244,7 @@ export const consentsController = {
         ...snapshot,
       });
 
-      const itemPayloads = await expandConsentItems(userId, doctor, body.requestType, requestScope);
+      const itemPayloads = await expandConsentItems(userId, doctor, body.requestType, requestScope, request.dataValues.id);
       const createdItems = itemPayloads.length > 0 ? await ConsentItem.bulkCreate(itemPayloads as any, { returning: true }) : [];
       await createTimelineEntries(request.dataValues.id, createdItems, 'APPROVED', 'USER', userId, 'Consent granted by patient');
 
@@ -343,7 +345,7 @@ export const consentsController = {
 
       const approvedRequestType = body.approvedRequestType || request.dataValues.requestType;
       const approvedScope = parseJsonScope(body.approvedScope);
-      const itemPayloads = await expandConsentItems(userId, doctor || await getDoctor(request.dataValues.doctorId), approvedRequestType, approvedScope);
+      const itemPayloads = await expandConsentItems(userId, doctor || await getDoctor(request.dataValues.doctorId), approvedRequestType, approvedScope, request.dataValues.id);
       const createdItems = itemPayloads.length > 0 ? await ConsentItem.bulkCreate(itemPayloads as any, { returning: true }) : [];
       await createTimelineEntries(request.dataValues.id, createdItems, 'APPROVED', 'USER', userId, 'Consent approved by patient');
 

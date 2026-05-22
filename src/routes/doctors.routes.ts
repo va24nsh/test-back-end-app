@@ -7,3 +7,4 @@ export const doctorsRoutes = Router();
 doctorsRoutes.use(rateLimitMiddleware, verifyAccessToken, fetchUser);
 doctorsRoutes.get('/', doctorsController.getAll);
 doctorsRoutes.get('/search', doctorsController.search);
+doctorsRoutes.get('/:id', doctorsController.getById);

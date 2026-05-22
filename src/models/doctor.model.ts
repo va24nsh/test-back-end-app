@@ -13,11 +13,14 @@ export interface DoctorAttributes {
   profilePicture?: string | null;
   status: DoctorStatus;
   isVerified: boolean;
+  fees?: number | null;
+  yearsExperience?: number | null;
+  qualification?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export type DoctorCreationAttributes = Optional<DoctorAttributes, 'id' | 'externalDoctorId' | 'specialization' | 'hospitalName' | 'profilePicture' | 'status' | 'isVerified' | 'createdAt' | 'updatedAt'>;
+export type DoctorCreationAttributes = Optional<DoctorAttributes, 'id' | 'externalDoctorId' | 'specialization' | 'hospitalName' | 'profilePicture' | 'status' | 'isVerified' | 'fees' | 'yearsExperience' | 'qualification' | 'createdAt' | 'updatedAt'>;
 
 export class Doctor extends Model<DoctorAttributes, DoctorCreationAttributes> implements DoctorAttributes {
   public id!: string;
@@ -29,6 +32,9 @@ export class Doctor extends Model<DoctorAttributes, DoctorCreationAttributes> im
   public profilePicture?: string | null;
   public status!: DoctorStatus;
   public isVerified!: boolean;
+  public fees?: number | null;
+  public yearsExperience?: number | null;
+  public qualification?: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -80,6 +86,21 @@ Doctor.init(
       allowNull: false,
       defaultValue: true,
       field: 'is_verified',
+    },
+    fees: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'fees',
+    },
+    yearsExperience: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'years_experience',
+    },
+    qualification: {
+      type: DataTypes.STRING(500),
+      allowNull: true,
+      field: 'qualification',
     },
     createdAt: {
       type: DataTypes.DATE,

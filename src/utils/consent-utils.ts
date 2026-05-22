@@ -22,6 +22,9 @@ export const buildDoctorResponse = (doctor: Doctor) => ({
   profilePicture: doctor.dataValues.profilePicture || null,
   status: doctor.dataValues.status,
   isVerified: doctor.dataValues.isVerified,
+  fees: doctor.dataValues.fees ?? null,
+  yearsExperience: doctor.dataValues.yearsExperience ?? null,
+  qualification: doctor.dataValues.qualification ?? null,
 });
 
 export const buildReportSummary = (report: ClinicalReport) => ({

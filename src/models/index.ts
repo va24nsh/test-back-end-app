@@ -40,6 +40,8 @@ import { UserSubscriptionInvoice } from '@models/userSubscriptionInvoice.model';
 import { UserSubscriptionAuditLog } from '@models/userSubscriptionAuditLog.model';
 import { SubscriptionCoupon } from '@models/subscriptionCoupon.model';
 import { UserPolicyAcceptance } from '@models/userPolicyAcceptance.model';
+import { Appointment } from '@models/appointment.model';
+import { Prescription } from '@models/prescription.model';
 import { defineAssociations } from '@models/associations';
 
 interface DatabaseModels {
@@ -73,6 +75,8 @@ interface DatabaseModels {
   UserSubscriptionAuditLog: typeof UserSubscriptionAuditLog;
   SubscriptionCoupon: typeof SubscriptionCoupon;
   UserPolicyAcceptance: typeof UserPolicyAcceptance;
+  Appointment: typeof Appointment;
+  Prescription: typeof Prescription;
 }
 
 const db: DatabaseModels = {} as DatabaseModels;
@@ -109,6 +113,8 @@ db.UserSubscriptionInvoice = UserSubscriptionInvoice;
 db.UserSubscriptionAuditLog = UserSubscriptionAuditLog;
 db.SubscriptionCoupon = SubscriptionCoupon;
 db.UserPolicyAcceptance = UserPolicyAcceptance;
+db.Appointment = Appointment;
+db.Prescription = Prescription;
 
 // Define associations after all models are loaded
 defineAssociations();
@@ -131,4 +137,6 @@ export { ConsentItemTimeline } from '@models/consentItemTimeline.model';
 export { ConsentAccessLog } from '@models/consentAccessLog.model';
 export { UserProfile } from '@models/userProfile.model';
 export { Nudge } from '@models/nudge.model';
+export { Appointment } from '@models/appointment.model';
+export { Prescription } from '@models/prescription.model';
 export { sequelize } from '@config/database';

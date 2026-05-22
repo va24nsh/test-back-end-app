@@ -14,6 +14,36 @@ const doctorListQuerySchema = Joi.object({
   status: Joi.string().valid('ACTIVE', 'INACTIVE', 'SUSPENDED').default('ACTIVE'),
 }).unknown(false);
 
+const doctorCreateBodySchema = Joi.object({
+  firstName: Joi.string().trim().min(1).max(100).required(),
+  lastName: Joi.string().trim().min(1).max(100).required(),
+  specialization: Joi.string().trim().max(200).optional().allow(null),
+  hospitalName: Joi.string().trim().max(500).optional().allow(null),
+  profilePicture: Joi.string().trim().max(2000).optional().allow(null),
+  status: Joi.string().valid('ACTIVE', 'INACTIVE', 'SUSPENDED').default('ACTIVE'),
+  isVerified: Joi.boolean().default(true),
+  fees: Joi.number().integer().min(0).max(999999).optional().allow(null),
+  yearsExperience: Joi.number().integer().min(0).max(100).optional().allow(null),
+  qualification: Joi.string().trim().max(500).optional().allow(null),
+}).unknown(false);
+
+const doctorUpdateBodySchema = Joi.object({
+  firstName: Joi.string().trim().min(1).max(100).optional(),
+  lastName: Joi.string().trim().min(1).max(100).optional(),
+  specialization: Joi.string().trim().max(200).optional().allow(null),
+  hospitalName: Joi.string().trim().max(500).optional().allow(null),
+  profilePicture: Joi.string().trim().max(2000).optional().allow(null),
+  status: Joi.string().valid('ACTIVE', 'INACTIVE', 'SUSPENDED').optional(),
+  isVerified: Joi.boolean().optional(),
+  fees: Joi.number().integer().min(0).max(999999).optional().allow(null),
+  yearsExperience: Joi.number().integer().min(0).max(100).optional().allow(null),
+  qualification: Joi.string().trim().max(500).optional().allow(null),
+}).unknown(false);
+
+const doctorIdParamsSchema = Joi.object({
+  id: Joi.string().uuid().required(),
+}).unknown(false);
+
 const validate = <T>(schema: Joi.Schema, data: Record<string, unknown> | undefined): T => {
   const body = data ?? {};
   const { error, value } = schema.validate(body, {
@@ -40,5 +70,8 @@ const validate = <T>(schema: Joi.Schema, data: Record<string, unknown> | undefin
 export const DoctorValidationSchemas = {
   doctorSearchQuery: doctorSearchQuerySchema,
   doctorListQuery: doctorListQuerySchema,
+  doctorCreateBody: doctorCreateBodySchema,
+  doctorUpdateBody: doctorUpdateBodySchema,
+  doctorIdParams: doctorIdParamsSchema,
   validate,
 };

@@ -1,5 +1,7 @@
 import { Op } from 'sequelize';
 import { LoggerFactory } from '@adapters';
+import { GenericError } from '@errors/GenericError';
+import { ErrorCodes } from '@errors/errorCodes';
 import { Doctor } from '@models';
 import { ExtendedRequest, ExtendedResponse } from '@types';
 import { DoctorValidationSchemas } from '@validators';
@@ -45,6 +47,27 @@ export const doctorsController = {
       );
     } catch (error) {
       handleControllerError(error, res, logger, { method: 'getAll' });
+    }
+  },
+
+  getById: async (req: ExtendedRequest, res: ExtendedResponse) => {
+    try {
+      const params = DoctorValidationSchemas.validate<{ id: string }>(
+        DoctorValidationSchemas.doctorIdParams,
+        req.params as Record<string, unknown>
+      );
+
+      const doctor = await Doctor.findOne({
+        where: { id: params.id, status: 'ACTIVE' },
+      });
+
+      if (!doctor) {
+        throw new GenericError('Doctor not found', ErrorCodes.DOCTOR_NOT_FOUND, 404, true);
+      }
+
+      res.sendResponse(buildDoctorResponse(doctor), 'Doctor retrieved successfully');
+    } catch (error) {
+      handleControllerError(error, res, logger, { method: 'getById' });
     }
   },
 

@@ -18,8 +18,8 @@ import { signedUrlRoutes } from '@routes/signed-url.routes';
 import { nudgesRoutes } from '@routes/nudges.routes';
 import { consentTextRoutes } from '@routes/consent-text.routes';
 // Phase 2 routes
-// import { prescriptionsRoutes } from '@routes/prescriptions.routes';
-// import { appointmentsRoutes } from '@routes/appointments.routes';
+import { prescriptionsRoutes } from '@routes/prescriptions.routes';
+import { appointmentsRoutes } from '@routes/appointments.routes';
 
 export const routes = Router();
 
@@ -44,6 +44,6 @@ routes.use('/user-profiles', userProfilesRoutes);
 routes.use('/signed-url', signedUrlRoutes);
 routes.use('/nudges', nudgesRoutes);
 // Phase 2
-// routes.use('/prescriptions', prescriptionsRoutes);
-// routes.use('/appointments', appointmentsRoutes);
+routes.use('/prescriptions', prescriptionsRoutes);
+routes.use('/appointments', appointmentsRoutes);
 
