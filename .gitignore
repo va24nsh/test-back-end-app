@@ -50,6 +50,4 @@ coverage/
 # Postman collection (may contain sensitive URLs/tokens)
 postman_collection.json
 
-*-lock.json
-
 jest.*
