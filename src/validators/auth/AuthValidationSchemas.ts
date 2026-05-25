@@ -32,6 +32,13 @@ const emailLoginSendLinkSchema = Joi.object({
   recaptchaToken: Joi.string().required().trim().min(10).max(4096),
 }).unknown(false);
 
+const emailVerifyLinkSchema = Joi.object({
+  oobCode: Joi.string().required().trim().min(1).max(4096),
+  email: Joi.string().email().required().trim().lowercase(),
+  deviceId: Joi.string().required().trim().min(1).max(255),
+  recaptchaToken: Joi.string().trim().min(10).max(4096).optional(),
+}).unknown(false);
+
 const exchangeSchema = Joi.object({
   deviceId: Joi.string().trim().min(1).max(255).optional(),
 }).unknown(false);
@@ -87,6 +94,7 @@ export const AuthValidationSchemas = {
   otpResend: otpResendSchema,
   otpVerify: otpVerifySchema,
   emailLoginSendLink: emailLoginSendLinkSchema,
+  emailVerifyLink: emailVerifyLinkSchema,
   exchange: exchangeSchema,
   emailVerificationSend: emailVerificationSendSchema,
   emailVerificationFinalize: emailVerificationFinalizeSchema,

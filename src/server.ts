@@ -12,6 +12,7 @@ import {
   rateLimitMiddleware,
 } from '@middlewares';
 import { routes } from '@routes';
+import { emailVerifyPublicRoutes } from '@routes/email-verify-public.routes';
 import { LoggerFactory } from '@adapters';
 import { testConnection } from '@config/database';
 import { config, validateConfig } from '@config/environment';
@@ -64,6 +65,9 @@ app.get('/health', (req: express.Request, res: express.Response) => {
 
 // Routes
 app.use('/api', routes);
+
+// Public email verification (no /api prefix — accessed directly from email links)
+app.use(emailVerifyPublicRoutes);
 
 // Error handling (must be last)
 app.use(notFoundHandler);

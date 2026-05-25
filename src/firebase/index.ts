@@ -6,5 +6,6 @@ export {
   validateCryptId,
   FirebaseUser 
 } from '@firebase/firebaseAuth';
+export { verifyEmailLinkOobCode, EmailLinkVerifyResult } from '@firebase/firebaseEmailVerify';
 export { default } from '@firebase/firebaseAdmin';
 

@@ -11,10 +11,9 @@ export interface ConsentAccessLogAttributes {
   accessType: 'REPORT' | 'PROFILE_SECTION';
   accessedAt: Date;
   createdAt: Date;
-  updatedAt: Date;
 }
 
-export type ConsentAccessLogCreationAttributes = Optional<ConsentAccessLogAttributes, 'id' | 'consentRequestId' | 'consentItemId' | 'reportId' | 'createdAt' | 'updatedAt'>;
+export type ConsentAccessLogCreationAttributes = Optional<ConsentAccessLogAttributes, 'id' | 'consentRequestId' | 'consentItemId' | 'reportId' | 'createdAt'>;
 
 export class ConsentAccessLog
   extends Model<ConsentAccessLogAttributes, ConsentAccessLogCreationAttributes>
@@ -29,7 +28,6 @@ export class ConsentAccessLog
   public accessType!: 'REPORT' | 'PROFILE_SECTION';
   public accessedAt!: Date;
   public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
 }
 
 ConsentAccessLog.init(
@@ -81,17 +79,12 @@ ConsentAccessLog.init(
       defaultValue: DataTypes.NOW,
       field: 'created_at',
     },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-      field: 'updated_at',
-    },
   },
   {
     sequelize,
     tableName: 'consent_access_logs',
     timestamps: true,
+    updatedAt: false,
     underscored: false,
   }
 );

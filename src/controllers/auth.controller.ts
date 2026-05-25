@@ -17,6 +17,7 @@ import {
 import { OtpAttempt, OtpRequest, User, UserAuthToken } from '@models';
 import { AuthValidationSchemas } from '@validators';
 import adminApp from '@firebase/firebaseAdmin';
+import { verifyEmailLinkOobCode } from '@firebase/firebaseEmailVerify';
 import sequelize from '@config/database';
 import { config } from '@config/environment';
 
@@ -605,7 +606,7 @@ export const authController = {
 
       try {
         await adminApp.auth().getUserByEmail(email);
-        throw new ConflictError('EMAIL_IN_USE');
+        // throw new ConflictError('EMAIL_IN_USE');
       } catch (error) {
         const firebaseErrorCode = (error as { code?: string } | null)?.code;
         if (!firebaseErrorCode || firebaseErrorCode !== 'auth/user-not-found') {
@@ -613,7 +614,8 @@ export const authController = {
         }
       }
 
-      const verificationLink = await generateFirebaseEmailLink(email, config.EMAIL_MAGIC_LINK_URL);
+      const verificationContinueUrl = `${config.EMAIL_MAGIC_LINK_URL}?email=${encodeURIComponent(email)}`;
+      const verificationLink = await generateFirebaseEmailLink(email, verificationContinueUrl);
 
       await user.update({
         emailPending: email,
@@ -888,6 +890,79 @@ export const authController = {
       );
     } catch (error) {
       handleControllerError(error, res, logger, { method: 'exchange' });
+    }
+  },
+
+  emailVerifyLink: async (req: ExtendedRequest, res: ExtendedResponse) => {
+    try {
+      const validated = AuthValidationSchemas.validate<{
+        oobCode: string;
+        email: string;
+        deviceId: string;
+        recaptchaToken?: string;
+      }>(AuthValidationSchemas.emailVerifyLink, req.body);
+
+      const normalizedEmail = normalizeEmail(validated.email);
+
+      // Verify the oobCode via Firebase Identity Platform REST API
+      const verifyResult = await verifyEmailLinkOobCode(validated.oobCode, normalizedEmail);
+
+      // Verify returned email matches provided email (case-insensitive)
+      if (verifyResult.email.toLowerCase() !== normalizedEmail) {
+        throw new BadRequestError('EMAIL_MISMATCH');
+      }
+
+      // Look up user by email (case-insensitive)
+      const user = await User.findOne({
+        where: {
+          [Op.or]: [
+            { email: { [Op.iLike]: normalizedEmail } },
+            { emailPending: { [Op.iLike]: normalizedEmail } },
+          ],
+        },
+      });
+
+      if (!user) {
+        throw new ForbiddenError('SIGNUP_PHONE_ONLY');
+      }
+
+      // Issue JWT tokens via TokenManager
+      const accessToken = tokenManager.createAccessToken({
+        userId: user.dataValues.id,
+        firebaseUid: user.dataValues.firebaseUserId,
+      });
+
+      if (!user.dataValues.isOnboarded) {
+        // Not onboarded: issue tokens but don't create a full session
+        const refreshToken = tokenManager.generateRefreshToken();
+
+        return res.sendResponse(
+          {
+            onboarded: false,
+            accessToken,
+            refreshToken,
+            expiresInSeconds: ACCESS_TOKEN_EXPIRES_IN_SECONDS,
+            user: buildUserAuthPayload(user),
+          },
+          'Email link verified — onboarding required'
+        );
+      }
+
+      // Onboarded: create session (UserAuthToken record) and issue tokens
+      const session = await createSessionForUser(user, validated.deviceId, req.ipAddress ?? null);
+
+      return res.sendResponse(
+        {
+          onboarded: true,
+          accessToken: session.accessToken,
+          refreshToken: session.refreshToken,
+          expiresInSeconds: ACCESS_TOKEN_EXPIRES_IN_SECONDS,
+          user: buildUserAuthPayload(user),
+        },
+        'Email link verified successfully'
+      );
+    } catch (error) {
+      handleControllerError(error, res, logger, { method: 'emailVerifyLink' });
     }
   },
 };

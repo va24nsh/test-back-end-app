@@ -36,6 +36,7 @@ export interface EnvironmentConfig {
   FIREBASE_PROJECT_ID: string;
   FIREBASE_PRIVATE_KEY: string;
   FIREBASE_CLIENT_EMAIL: string;
+  FIREBASE_WEB_API_KEY: string;
   
   // JWT
   JWT_SECRET: string;
@@ -107,6 +108,7 @@ export const config: EnvironmentConfig = {
   FIREBASE_PROJECT_ID: getEnv('FIREBASE_PROJECT_ID'),
   FIREBASE_PRIVATE_KEY: getEnv('FIREBASE_PRIVATE_KEY'),
   FIREBASE_CLIENT_EMAIL: getEnv('FIREBASE_CLIENT_EMAIL'),
+  FIREBASE_WEB_API_KEY: getEnv('FIREBASE_WEB_API_KEY'),
   
   // JWT
   JWT_SECRET: getEnv('JWT_SECRET'),
@@ -170,6 +172,7 @@ export function validateConfig(): void {
     'FIREBASE_PROJECT_ID',
     'FIREBASE_PRIVATE_KEY',
     'FIREBASE_CLIENT_EMAIL',
+    'FIREBASE_WEB_API_KEY',
     
     // reCAPTCHA (required for public APIs)
     'RECAPTCHA_SECRET_KEY',

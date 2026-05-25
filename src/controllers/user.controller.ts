@@ -149,7 +149,7 @@ export const userController = {
 
         try {
           await adminApp.auth().getUserByEmail(normalizedEmail);
-          throw new ConflictError('EMAIL_IN_USE');
+          // throw new ConflictError('EMAIL_IN_USE');
         } catch (error) {
           const firebaseErrorCode = (error as { code?: string } | null)?.code;
           if (firebaseErrorCode && firebaseErrorCode !== 'auth/user-not-found') {
