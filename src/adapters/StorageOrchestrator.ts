@@ -5,7 +5,7 @@ import { Storage as GcpStorage } from '@google-cloud/storage';
 import { config } from '@config/environment';
 
 export type StorageOperation = 'upload' | 'access';
-export type StorageProviderKind = 'aws' | 'gcp' | 'local';
+export type StorageProviderKind = 'aws' | 'gcp' | 'gcs' | 'local';
 
 export interface SignedStorageUrlInput {
   fileKey: string;
@@ -23,7 +23,7 @@ export interface StorageArtifact {
 
 const DEFAULT_EXPIRES_IN_SECONDS = 60 * 60;
 const DEFAULT_BUCKET_REGION = 'us-east-1';
-const SUPPORTED_PROVIDER_VALUES: StorageProviderKind[] = ['aws', 'gcp', 'local'];
+const SUPPORTED_PROVIDER_VALUES: StorageProviderKind[] = ['aws', 'gcp', 'gcs', 'local'];
 
 const normalizeProvider = (value: string): string => value.trim().toLowerCase() || 'local';
 
@@ -52,7 +52,9 @@ export class StorageOrchestrator {
     this.provider = SUPPORTED_PROVIDER_VALUES.includes(normalizeProvider(config.CLOUD_PROVIDER) as StorageProviderKind)
       ? normalizeProvider(config.CLOUD_PROVIDER)
       : 'local';
-    this.bucketName = sanitizeSignatureInput(config.STORAGE_BUCKET_NAME);
+    this.bucketName = this.provider === 'gcs'
+      ? sanitizeSignatureInput(config.GCS_BUCKET_NAME)
+      : sanitizeSignatureInput(config.STORAGE_BUCKET_NAME);
     this.signingSecret = config.STORAGE_SIGNING_SECRET;
 
     if (this.provider === 'aws') {
@@ -80,6 +82,17 @@ export class StorageOrchestrator {
             : undefined,
       });
     }
+
+    if (this.provider === 'gcs') {
+      const credentials = JSON.parse(config.GCS_KEY!);
+      if (credentials.private_key) {
+        credentials.private_key = normalizePrivateKey(credentials.private_key);
+      }
+      this.gcpStorage = new GcpStorage({
+        projectId: config.GCS_PROJECT_ID,
+        credentials,
+      });
+    }
   }
 
   buildFileUrl(fileKey: string): string {
@@ -87,7 +100,7 @@ export class StorageOrchestrator {
       return `${getAwsFileUrlScheme()}://${this.bucketName}/${fileKey}`;
     }
 
-    if (this.provider === 'gcp') {
+    if (this.provider === 'gcp' || this.provider === 'gcs') {
       return `${getGcpFileUrlScheme()}://${this.bucketName}/${fileKey}`;
     }
 
@@ -197,7 +210,7 @@ export class StorageOrchestrator {
     const uploadUrl =
       this.provider === 'aws'
         ? await this.createAwsUploadUrl(input)
-        : this.provider === 'gcp'
+        : this.provider === 'gcp' || this.provider === 'gcs'
           ? await this.createGcpUploadUrl(input)
           : this.buildLocalSignedUrl('upload', input);
 
@@ -214,7 +227,7 @@ export class StorageOrchestrator {
     const accessUrl =
       this.provider === 'aws'
         ? await this.createAwsAccessUrl(input)
-        : this.provider === 'gcp'
+        : this.provider === 'gcp' || this.provider === 'gcs'
           ? await this.createGcpAccessUrl(input)
           : this.buildLocalSignedUrl('access', input);
 

@@ -25,6 +25,11 @@ export interface EnvironmentConfig {
   GCP_CLIENT_EMAIL: string;
   GCP_PRIVATE_KEY: string;
   
+  // GCS (preferred GCS config)
+  GCS_PROJECT_ID: string;
+  GCS_BUCKET_NAME: string;
+  GCS_KEY: string;
+  
   // PostgreSQL
   POSTGRES_HOST: string;
   POSTGRES_PORT: number;
@@ -96,6 +101,11 @@ export const config: EnvironmentConfig = {
   GCP_PROJECT_ID: getEnv('GCP_PROJECT_ID'),
   GCP_CLIENT_EMAIL: getEnv('GCP_CLIENT_EMAIL'),
   GCP_PRIVATE_KEY: getEnv('GCP_PRIVATE_KEY'),
+  
+  // GCS (preferred GCS config)
+  GCS_PROJECT_ID: getEnv('GCS_PROJECT_ID'),
+  GCS_BUCKET_NAME: getEnv('GCS_BUCKET_NAME'),
+  GCS_KEY: getEnv('GCS_KEY'),
   
   // PostgreSQL
   POSTGRES_HOST: getEnv('POSTGRES_HOST'),
@@ -192,7 +202,6 @@ export function validateConfig(): void {
 
     // Storage baseline
     'CLOUD_PROVIDER',
-    'STORAGE_BUCKET_NAME',
     'STORAGE_SIGNING_SECRET',
     'STORAGE_WORKSPACE_ID',
 
@@ -235,6 +244,12 @@ export function validateConfig(): void {
     if (!config.GCP_PROJECT_ID.trim()) missingFields.push('GCP_PROJECT_ID');
     if (!config.GCP_CLIENT_EMAIL.trim()) missingFields.push('GCP_CLIENT_EMAIL');
     if (!config.GCP_PRIVATE_KEY.trim()) missingFields.push('GCP_PRIVATE_KEY');
+  }
+
+  if (config.CLOUD_PROVIDER === 'gcs') {
+    if (!config.GCS_PROJECT_ID.trim()) missingFields.push('GCS_PROJECT_ID');
+    if (!config.GCS_BUCKET_NAME.trim()) missingFields.push('GCS_BUCKET_NAME');
+    if (!config.GCS_KEY.trim()) missingFields.push('GCS_KEY');
   }
 
   if (missingFields.length > 0) {
